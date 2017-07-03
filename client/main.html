@@ -1,0 +1,59 @@
+<head>
+  <title>iot_app_1</title>
+</head>
+
+<body>
+  <h1>Welcome to Wizar !</h1>
+  {{> hud}}
+  {{> inter}}
+  {{> reset}}
+</body>
+
+<template name="hud">
+  <h2>{{name}} </h2>
+  <p>
+  Team : {{team}}<br>
+  Class : {{Class}}</p>
+
+  <p>Deaths : {{deaths}}<br>
+    Frags : {{frags}}</p>
+
+  <p>Health : {{health}}<br>
+  Armor : {{armor}}<br>
+  Wizar : {{wizar}}</p>
+
+<p>Attacker : {{shooter}}<br>
+  Event : {{event}}<br>
+</p>
+
+  <p>
+    <h3>Pistol</h3>
+    Ammo : {{pAmmo}} <br>
+  Target : {{pTarget}}<br> 
+</p>
+
+  <p>
+    <h3>WizarBlaster</h3>
+    Ammo : {{wAmmo}} <br>
+  Target : {{wTarget}}<br>
+</p>
+
+  <p>
+    <h3>Arcanic Glove</h3>
+    Spell : {{spell}} <br>
+  Target : {{gTarget}}<br>
+  Pattern : {{glPattern}}<br>
+  PreSpell : {{glPreSpell}}
+</p>
+
+<button>Son</button>
+<br>
+</template>
+
+<template name="reset">
+  <button>Reset game</button>
+</template>
+
+<template name="inter">
+<p>{{events}} </p>
+</template>
