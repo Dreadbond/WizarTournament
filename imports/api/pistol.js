@@ -16,13 +16,13 @@ var object = ":pistol" ;
 
                 if (mess.value != "!vide")
                 {
-                playersDb.update({"IRtag": mess.to}, { $set: {eventObject: ":pistol", eventFb: ":target",  soundFile: '/sounds/flingue/target.wav'} }, {upsert: true});  //eventFb: ":target",
-                //Meteor.call('ButtSendTest', ":pistol", "!111111", ":target", 20, function(err, result) {})
+                playersDb.update({"IRtag": mess.to}, { $set: {eventObject: ":pistol", eventFb: ":target",  soundFile: 'void'} }, {upsert: true});  //eventFb: ":target",
+                //Meteor.call('playerFeedback', ":pistol", "!111111", ":target", 20, function(err, result) {})
                 }
                 else
                 {
-                playersDb.update({"IRtag": mess.to}, { $set: {eventObject: ":pistol", eventFb: ":!target",  soundFile: '/sounds/flingue/noTarget.aif' } }, {upsert: true}); //eventFb: ":!target", 
-                //Meteor.call('ButtSendTest', ":pistol", "!111111", ":!target", 20, function(err, result) {}) 
+                playersDb.update({"IRtag": mess.to}, { $set: {eventObject: ":pistol", eventFb: ":!target",  soundFile: 'void' } }, {upsert: true}); //eventFb: ":!target", 
+                //Meteor.call('playerFeedback', ":pistol", "!111111", ":!target", 20, function(err, result) {}) 
                 }
         
         }//End cible direct
@@ -34,59 +34,98 @@ var object = ":pistol" ;
                     {
                     //playersDb.update({"IRtag": mess.to }, { $set: { ammo: defaultPlayer.ammoMax }});
                     string = "Rechargement de "+ mess.from + " en cours ...";
-                    playersDb.update({"IRtag": mess.to }, { $set: { eventObject: ":pistol", event: string, eventFb: "reloadFb", soundFile: '/sounds/flingue/reload1.mp3', "pistol.canShoot": false }});
+                    playersDb.update({"IRtag": mess.to }, 
+                        { $set: { 
+                            eventObject: ":pistol", 
+                            event: string, 
+                            eventFb: "reloadFb", 
+                            soundFile: '/sounds/flingue/reload1.mp3', 
+                            "pistol.canShoot": false }
+                        });
 
                         Meteor.setTimeout(function() {
                             playersDb.update({"IRtag": mess.to }, { $set: { "pistol.ammo": defaultPlayer.pistol.ammoMax, "pistol.canShoot": true }});
-                            Meteor.call('ButtSendTest', ":pistol", "!111111", "ammo", 20, function(err, result) {})
+                            Meteor.call('playerFeedback', ":pistol", "!111111", "ammo", 20, function(err, result) {});
                             }, 2000
                         );
                     }
             }
 
-        if (mess.param == "trigger"  && mess.value && player[0]["pistol"]["canShoot"] ){
-
-
-              //shooter = playersDb.find({"IRtag": mess.to }).fetch();
-              ammo = player[0]["pistol"].ammo ;
+        if (mess.param == "trigger"  && mess.value && player[0].pistol.canShoot ){
+              ammo = player[0].pistol.ammo ;
+              buff = player[0].pistol.ammoType ;
+              
 
               if (ammo >0 ){
                 playersDb.update({"IRtag": mess.to }, { $inc: { "pistol.ammo": -1 }});
-                //playersDb.update({"IRtag": mess.to }, { $inc: { ammo: -1 }, $set: {eventFb: "ammo",} });
 
                 shooter = playersDb.find({"IRtag": mess.to }).fetch();
-                ammo = shooter[0]["pistol"].ammo ;
+                ammo = shooter[0].pistol.ammo ;
 
-                victimIRtag = shooter[0]["pistol"].directTarget ;   //si flemme : playersDb.find( {IRtag: mess.value} ).fetch();
-                playersDb.update({"IRtag": victimIRtag }, { $inc: { health: -10 }});
-                //playersDb.update({"IRtag": mess.to }, { $set: { eventFb: "beenShot" } }, {upsert: true});
+                
+                victimIRtag = shooter[0].pistol.directTarget ;
                 victim = playersDb.find( {IRtag: victimIRtag} ).fetch();
+                playersDb.update({"IRtag": victimIRtag }, { $inc: { health: -10 }});
 
-                playersDb.update({"IRtag": mess.to }, { $set: { eventObject: ":pistol", eventFb: "shootFb", soundFile: '/sounds/flingue/attack1.mp3' } }, {upsert: true});  
+                
+
+                
+
+                playersDb.update({"IRtag": mess.to }, 
+                { $set: { 
+                    eventObject: ":pistol", 
+                    eventFb: "shootFb", 
+                    soundFile: '/sounds/flingue/attack1.mp3' 
+                    } },
+                {upsert: true});  
 
                     if (victimIRtag == "!vide")
                     {
 
-                    string = shooter[0]["name"] + " tire dans le vide ...";
+                    string = shooter[0].name + " tire dans le vide ...";
                     playersDb.update({"IRtag": mess.to }, { $set: { event: string }});
                     }
                 else if (victimIRtag != "!vide")
                     {
                     
                     string = shooter[0]["name"] + " tire sur " + victim[0]["name"];
-                    playersDb.update({"IRtag": mess.to }, { $set: { event: string, eventFb2: "beenShot" }});
-                    playersDb.update({"IRtag": victimIRtag }, { $set: { shooter: victimIRtag }});
+                    playersDb.update({"IRtag": mess.to }, 
+                        { $set: { 
+                            event: string, 
+                            eventFb2: "beenShot" 
+                        }
+                    });
+                    playersDb.update({"IRtag": victimIRtag }, 
+                        { $set: { 
+                            shooter: victimIRtag 
+                        }
+                    });
                 }
+
+                if (!victim[0].buff.canLit) {buff = "bullet";}
+
+                    switch(buff){
+                        case "fire": playersDb.update({"IRtag": victimIRtag }, { $set: { "buff.onFire": 5000 }}); break;
+                        case "poison": playersDb.update({"IRtag": victimIRtag }, { $set: { "buff.poisoned": 5000 }}); break;
+                        case "ice": playersDb.update({"IRtag": victimIRtag }, { $set: { "buff.frozen": 5000 }}); break;
+                        //case "bullet": break;
+                    }
 
               }
               else
               {
-                playersDb.update({"IRtag": mess.to }, { $set: { eventObject: ":pistol", eventFb: "pistolAmmoDepleted", event: "Munitions de pistolet épuisées.", soundFile: '/sounds/flingue/depleted1.mp3' } }, {upsert: true});
+                playersDb.update({"IRtag": mess.to }, 
+                { $set: { 
+                    eventObject: ":pistol", 
+                    eventFb: "pistolAmmoDepleted", 
+                    event: "Munitions de pistolet épuisées.", 
+                    soundFile: '/sounds/flingue/depleted1.mp3' 
+                } }, {upsert: true});
               }
 
             playersDb.update({"IRtag": mess.to }, { $set: { "pistol.canShoot": false }});
 
-            nextShoot = player[0]["pistol"].fireRate ;
+            nextShoot = player[0].pistol.fireRate ;
 
             //console.log(nextShoot);
                 Meteor.setTimeout(function() {

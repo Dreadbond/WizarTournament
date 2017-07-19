@@ -39,7 +39,7 @@ incomingJson = incomingData ;
         mess = JSON.parse(incomingData);
         }
         catch(e){console.log("Error : ", e)}
-    //console.log("Reçu  Ardu :", mess.param);
+    //console.log("Reçu  Ardu :", mess);
 
 
 
@@ -50,7 +50,7 @@ rules.general();
 }
 
 Meteor.methods({
- ButtSendTest(to, from, param, value = 1){
+ playerFeedback(to, from, param, value = 1){
 
     var DataToSend = new Object();
     DataToSend.to = to;
@@ -59,7 +59,7 @@ Meteor.methods({
     DataToSend.value = value;
     DataToSend= JSON.stringify(DataToSend);
 
-    console.log("Envoi Ardu :", DataToSend);
+    //console.log("Envoi Ardu :", DataToSend);
 
     sp.write(DataToSend);
 
@@ -86,6 +86,8 @@ Meteor.methods({
 
                     //canShoot: rules.defaultPlayer.canShoot,
                     //fireRate: rules.defaultPlayer.fireRate,
+                    inventory: rules.defaultPlayer.inventory,
+                    buff: rules.defaultPlayer.buff,
 
                     wizbla: rules.defaultPlayer.wizbla,
                     pistol: rules.defaultPlayer.pistol,
@@ -99,6 +101,7 @@ Meteor.methods({
                     eventFb: rules.defaultPlayer.eventFb,
                     eventFb2: rules.defaultPlayer.eventFb2,
                     eventObject: rules.defaultPlayer.eventObject,
+                    soundFile: rules.defaultPlayer.soundFile,
                     
                     }
                 },
@@ -112,6 +115,17 @@ Meteor.methods({
     console.log(qsd);
     return qsd ;
     },
+
+    damageType(object, ammoType){
+        retour = playersDb.update({"name": "Dreadbond"}, 
+            { $set: { 
+            "pistol.ammoType": ammoType}
+            }
+        , {upsert: true}
+        ); 
+        return retour ;
+    },
+
  });
 
 

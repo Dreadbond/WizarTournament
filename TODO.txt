@@ -1,4 +1,5 @@
 1 use React
+2 faire appli uniquement avec UI
 
 Intégrer le gant arcaglove
     >gestion Wizar

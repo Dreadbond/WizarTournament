@@ -90,7 +90,7 @@ Template.hud.helpers({
 
   health() {
     health = playersDb.find({"name": "Dreadbond"}).fetch();
-    //Meteor.call('ButtSendTest', ":hub", "!111111", "health", health[0]["health"], function(err, result) {})
+    //Meteor.call('playerFeedback', ":hub", "!11", "health", health[0]["health"], function(err, result) {})
     return health[0]["health"] ;
     
   },
@@ -104,6 +104,8 @@ Template.hud.helpers({
     wizar = playersDb.find({"name": "Dreadbond"}).fetch();
     return wizar[0]["wizar"] ;
   },
+
+
 
   pAmmo() {
     player = playersDb.find({"name": "Dreadbond"}).fetch();
@@ -149,16 +151,27 @@ Template.inter.helpers({
     
     if (eventFb2 == "beenShot"){
     setTimeout(function() {
-            Meteor.call('ButtSendTest', ":hub", "!111111", "beenShot", 1, function(err, result) {})
+            Meteor.call('playerFeedback', ":hub", "!11", "beenShot", 1, function(err, result) {})
             var s = new buzz.sound('/sounds/general/hit.mp3');
             s.play();
-              Meteor.setTimeout(function() {
-              Meteor.call('ButtSendTest', ":hub", "!111111", "health", player[0]['health'], function(err, result) {})
-              }, 100)
+              // Meteor.setTimeout(function() {
+              // Meteor.call('playerFeedback', ":hub", "!11", "health", player[0]['health'], function(err, result) {})
+              // }, 100)
           }, 150
         );
     }
     
+    // if (eventFb2 == "onFire"){
+    // setTimeout(function() {
+    //         Meteor.call('playerFeedback', ":hub", "!11", "onFire", 1, function(err, result) {})
+    //         var s = new buzz.sound('/sounds/general/onFire.mp3');
+    //         s.play();
+    //           Meteor.setTimeout(function() {
+    //           Meteor.call('playerFeedback', ":hub", "!11", "health", player[0]['health'], function(err, result) {})
+    //           }, 100)
+    //       }, 150
+    //     );
+    // }
 
     if (eventFb != "void"){
       soundFile = feedbacks.feedbacks(eventFb, player);
@@ -178,17 +191,18 @@ Template.inter.helpers({
 });
 
 Template.hud.events({
-  'click button'(event, instance)   {
-    //dataToSend = playersDb.find({"name": "Dreadbond"}).fetch();
-    //dataToSend = dataToSend[0]["eventFb"] ;
-    dataToSend = ":reloadFb"
-                                      //to, from, param, value
-        Meteor.call('ButtSendTest', ":pistol", "!111111", dataToSend, value, function(err, result) {
-        console.log("Envoi réussi"); 
-        })
+  'change select'(event, instance)   {
 
-    console.log("Son test vers serveur :", dataToSend); 
+    Meteor.call('damageType', "pistol", PistolDamageType.value, function(err, result) {
+      console.log(result);
+    });
+
+
+
   },
+
+  
+
 });
 
     
@@ -197,6 +211,10 @@ Template.reset.events({
 
     Meteor.call('reset', function(err, result) {
       console.log(result);
-    })
+    });
   }
 });
+
+
+
+

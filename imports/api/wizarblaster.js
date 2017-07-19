@@ -52,7 +52,7 @@ mode = mode[0].wizbla.mode ;
                         Meteor.setTimeout(function() {
                             playersDb.update({"IRtag": mess.to }, 
                             { $set: { "wizbla.ammo": defaultPlayer.wizbla.ammoMax, "wizbla.canShoot": true }});
-                            Meteor.call('ButtSendTest', ":wizbla", "!111111", "ammo", 20, function(err, result) {})
+                            Meteor.call('playerFeedback', ":wizbla", "!111111", "ammo", 20, function(err, result) {})
                             }, 4000
                         );
                     }
